@@ -8,7 +8,7 @@ from typing import Dict, Optional, Sequence
 
 import mmcv
 import numpy as np
-from mmengine.dist import is_main_process
+# from mmengine.dist import is_main_process
 from mmengine.evaluator import BaseMetric
 from mmengine.logging import MMLogger
 
@@ -92,7 +92,8 @@ class CityScapesMetric(BaseMetric):
 
         dir_name = osp.expanduser(self.outfile_prefix)
 
-        if osp.exists(dir_name) and is_main_process():
+        # if osp.exists(dir_name) and is_main_process():
+        if osp.exists(dir_name):
             logger: MMLogger = MMLogger.get_current_instance()
             logger.info('remove previous results.')
             shutil.rmtree(dir_name)
