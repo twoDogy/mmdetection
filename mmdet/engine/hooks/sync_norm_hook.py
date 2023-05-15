@@ -1,7 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 from collections import OrderedDict
 
-from mmengine.dist import get_dist_info
+# from mmengine.dist import get_dist_info
 from mmengine.hooks import Hook
 from torch import nn
 
@@ -26,7 +26,7 @@ class SyncNormHook(Hook):
     def before_val_epoch(self, runner):
         """Synchronizing norm."""
         module = runner.model
-        _, world_size = get_dist_info()
+        _, world_size = 0, 1#get_dist_info()
         if world_size == 1:
             return
         norm_states = get_norm_states(module)
