@@ -5,7 +5,7 @@ import cv2
 import mmcv
 import numpy as np
 import torch
-from mmengine.dist import master_only
+# from mmengine.dist import master_only
 from mmengine.structures import InstanceData, PixelData
 from mmengine.visualization import Visualizer
 
@@ -294,7 +294,7 @@ class DetLocalVisualizer(Visualizer):
                 horizontal_alignments='center')
         return self.get_image()
 
-    @master_only
+    # @master_only
     def add_datasample(
             self,
             name: str,
