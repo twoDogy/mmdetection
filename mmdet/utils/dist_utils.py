@@ -6,8 +6,8 @@ from collections import OrderedDict
 
 import numpy as np
 import torch
-import torch.distributed as dist
-from mmengine.dist import get_dist_info
+# import torch.distributed as dist
+# from mmengine.dist import get_dist_info
 from torch._utils import (_flatten_dense_tensors, _take_tensors,
                           _unflatten_dense_tensors)
 
@@ -27,7 +27,7 @@ def _allreduce_coalesced(tensors, world_size, bucket_size_mb=-1):
 
     for bucket in buckets:
         flat_tensors = _flatten_dense_tensors(bucket)
-        dist.all_reduce(flat_tensors)
+        # dist.all_reduce(flat_tensors)
         flat_tensors.div_(world_size)
         for tensor, synced in zip(
                 bucket, _unflatten_dense_tensors(flat_tensors, bucket)):
@@ -48,20 +48,21 @@ def allreduce_grads(params, coalesce=True, bucket_size_mb=-1):
         param.grad.data for param in params
         if param.requires_grad and param.grad is not None
     ]
-    world_size = dist.get_world_size()
+    # world_size = dist.get_world_size()
+    world_size = 1
     if coalesce:
         _allreduce_coalesced(grads, world_size, bucket_size_mb)
-    else:
-        for tensor in grads:
-            dist.all_reduce(tensor.div_(world_size))
+    # else:
+    #     for tensor in grads:
+    #         dist.all_reduce(tensor.div_(world_size))
 
 
 def reduce_mean(tensor):
     """"Obtain the mean of tensor on different GPUs."""
-    if not (dist.is_available() and dist.is_initialized()):
-        return tensor
-    tensor = tensor.clone()
-    dist.all_reduce(tensor.div_(dist.get_world_size()), op=dist.ReduceOp.SUM)
+    # if not (dist.is_available() and dist.is_initialized()):
+    #     return tensor
+    # tensor = tensor.clone()
+    # dist.all_reduce(tensor.div_(dist.get_world_size()), op=dist.ReduceOp.SUM)
     return tensor
 
 
@@ -80,10 +81,11 @@ def tensor2obj(tensor):
 def _get_global_gloo_group():
     """Return a process group based on gloo backend, containing all the ranks
     The result is cached."""
-    if dist.get_backend() == 'nccl':
-        return dist.new_group(backend='gloo')
-    else:
-        return dist.group.WORLD
+    # if dist.get_backend() == 'nccl':
+    #     return dist.new_group(backend='gloo')
+    # else:
+    #     return dist.group.WORLD
+    return
 
 
 def all_reduce_dict(py_dict, op='sum', group=None, to_float=True):
@@ -99,7 +101,7 @@ def all_reduce_dict(py_dict, op='sum', group=None, to_float=True):
     Args:
         py_dict (dict): Dict to be applied all reduce op.
         op (str): Operator, could be 'sum' or 'mean'. Default: 'sum'
-        group (:obj:`torch.distributed.group`, optional): Distributed group,
+        group (:obj:`uted.group`, optional): Distributed group,
             Default: None.
         to_float (bool): Whether to convert all values of dict to float.
             Default: True.
@@ -109,7 +111,7 @@ def all_reduce_dict(py_dict, op='sum', group=None, to_float=True):
     """
     warnings.warn(
         'group` is deprecated. Currently only supports NCCL backend.')
-    _, world_size = get_dist_info()
+    _, world_size = 0, 1 #get_dist_info()
     if world_size == 1:
         return py_dict
 
@@ -117,7 +119,7 @@ def all_reduce_dict(py_dict, op='sum', group=None, to_float=True):
     py_key = list(py_dict.keys())
     if not isinstance(py_dict, OrderedDict):
         py_key_tensor = obj2tensor(py_key)
-        dist.broadcast(py_key_tensor, src=0)
+        # dist.broadcast(py_key_tensor, src=0)
         py_key = tensor2obj(py_key_tensor)
 
     tensor_shapes = [py_dict[k].shape for k in py_key]
@@ -131,7 +133,7 @@ def all_reduce_dict(py_dict, op='sum', group=None, to_float=True):
     else:
         flatten_tensor = torch.cat([py_dict[k].flatten() for k in py_key])
 
-    dist.all_reduce(flatten_tensor, op=dist.ReduceOp.SUM)
+    # dist.all_reduce(flatten_tensor, op=dist.ReduceOp.SUM)
     if op == 'mean':
         flatten_tensor /= world_size
 
@@ -171,7 +173,7 @@ def sync_random_seed(seed=None, device='cuda'):
         seed = np.random.randint(2**31)
     assert isinstance(seed, int)
 
-    rank, world_size = get_dist_info()
+    rank, world_size = 0, 1 # get_dist_info()
 
     if world_size == 1:
         return seed
@@ -180,5 +182,5 @@ def sync_random_seed(seed=None, device='cuda'):
         random_num = torch.tensor(seed, dtype=torch.int32, device=device)
     else:
         random_num = torch.tensor(0, dtype=torch.int32, device=device)
-    dist.broadcast(random_num, src=0)
+    # dist.broadcast(random_num, src=0)
     return random_num.item()
