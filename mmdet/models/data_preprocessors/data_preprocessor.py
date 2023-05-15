@@ -7,7 +7,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from mmengine.dist import barrier, broadcast, get_dist_info
+# from mmengine.dist import barrier, broadcast, get_dist_info
 from mmengine.logging import MessageHub
 from mmengine.model import BaseDataPreprocessor, ImgDataPreprocessor
 from mmengine.structures import PixelData
@@ -226,7 +226,7 @@ class BatchSyncRandomResize(nn.Module):
                  interval: int = 10,
                  size_divisor: int = 32) -> None:
         super().__init__()
-        self.rank, self.world_size = get_dist_info()
+        self.rank, self.world_size = 0, 1#get_dist_info()
         self._input_size = None
         self._random_size_range = (round(random_size_range[0] / size_divisor),
                                    round(random_size_range[1] / size_divisor))
@@ -290,8 +290,8 @@ class BatchSyncRandomResize(nn.Module):
                     self._size_divisor * int(aspect_ratio * size))
             tensor[0] = size[0]
             tensor[1] = size[1]
-        barrier()
-        broadcast(tensor, 0)
+        # barrier()
+        # broadcast(tensor, 0)
         input_size = (tensor[0].item(), tensor[1].item())
         return input_size
 
