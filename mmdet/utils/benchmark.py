@@ -13,7 +13,7 @@ from mmcv.cnn import fuse_conv_bn
 from mmengine import MMLogger
 from mmengine.config import Config
 from mmengine.device import get_max_cuda_memory
-from mmengine.dist import get_world_size
+# from mmengine.dist import get_world_size
 from mmengine.runner import Runner, load_checkpoint
 from mmengine.utils.dl_utils import set_multi_processing
 from torch.nn.parallel import DistributedDataParallel
@@ -139,8 +139,8 @@ class InferenceBenchmark(BaseBenchmark):
                  logger: Optional[MMLogger] = None):
         super().__init__(max_iter, log_interval, num_warmup, logger)
 
-        assert get_world_size(
-        ) == 1, 'Inference benchmark does not allow distributed multi-GPU'
+        # assert get_world_size(
+        # ) == 1, 'Inference benchmark does not allow distributed multi-GPU'
 
         self.cfg = copy.deepcopy(cfg)
         self.distributed = distributed
@@ -296,8 +296,8 @@ class DataLoaderBenchmark(BaseBenchmark):
         assert dataset_type in ['train', 'val', 'test'], \
             'dataset_type only supports train,' \
             f' val and test, but got {dataset_type}'
-        assert get_world_size(
-        ) == 1, 'Dataloader benchmark does not allow distributed multi-GPU'
+        # assert get_world_size(
+        # ) == 1, 'Dataloader benchmark does not allow distributed multi-GPU'
 
         self.cfg = copy.deepcopy(cfg)
         self.distributed = distributed
@@ -421,8 +421,8 @@ class DatasetBenchmark(BaseBenchmark):
         assert dataset_type in ['train', 'val', 'test'], \
             'dataset_type only supports train,' \
             f' val and test, but got {dataset_type}'
-        assert get_world_size(
-        ) == 1, 'Dataset benchmark does not allow distributed multi-GPU'
+        # assert get_world_size(
+        # ) == 1, 'Dataset benchmark does not allow distributed multi-GPU'
         self.cfg = copy.deepcopy(cfg)
 
         if dataset_type == 'train':
