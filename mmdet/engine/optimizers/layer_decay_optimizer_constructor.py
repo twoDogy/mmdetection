@@ -3,7 +3,7 @@ import json
 from typing import List
 
 import torch.nn as nn
-from mmengine.dist import get_dist_info
+# from mmengine.dist import get_dist_info
 from mmengine.logging import MMLogger
 from mmengine.optim import DefaultOptimWrapperConstructor
 
@@ -144,7 +144,7 @@ class LearningRateDecayOptimizerConstructor(DefaultOptimWrapperConstructor):
 
             parameter_groups[group_name]['params'].append(param)
             parameter_groups[group_name]['param_names'].append(name)
-        rank, _ = get_dist_info()
+        rank, _ = 0, 1#get_dist_info()
         if rank == 0:
             to_display = {}
             for key in parameter_groups:
