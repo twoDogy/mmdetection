@@ -3,7 +3,7 @@ import os
 import os.path as osp
 from typing import Optional, Sequence
 
-from mmengine.dist import is_main_process
+# from mmengine.dist import is_main_process
 from mmengine.evaluator import BaseMetric
 from mmengine.fileio import dump
 from mmengine.logging import MMLogger
@@ -60,8 +60,9 @@ class DumpProposals(BaseMetric):
             'The output file must be a pkl file.'
 
         self.proposals_file = os.path.join(self.output_dir, proposals_file)
-        if is_main_process():
-            os.makedirs(self.output_dir, exist_ok=True)
+        # if is_main_process():
+        #     os.makedirs(self.output_dir, exist_ok=True)
+        os.makedirs(self.output_dir, exist_ok=True)
 
     def process(self, data_batch: Sequence[dict],
                 data_samples: Sequence[dict]) -> None:
